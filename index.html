@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Health Assistant | Smart Symptom Checker</title>
+<meta name="description" content="AI-powered health assistant for symptom checking, disease prediction, and personalized health reports in multiple Indian languages." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<script src="https://cdn.jsdelivr.net/npm/ogl@0.0.64/dist/ogl.umd.js"></script>
+<script src="AuroraBackground.js"></script>
+</head>
+<!-- ═══════════════════════════════════════════════ NEW BG ═══ -->
+<div id="aurora-container"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    new AuroraBackground('#aurora-container', {
+      colorStops: ["#3A29FF", "#FF94B4", "#FF3232"],
+      blend: 0.5,
+      amplitude: 1.0,
+      speed: 1
+    });
+  });
+</script>
+
+<!-- ═══════════════════════════════════════════════ TOP NAV BAR ═══ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-brand">
+    <div class="nav-logo">
+      <img src="assets/logo.png" alt="AI Health Logo" class="nav-logo-img">
+    </div>
+    <div class="nav-title-group">
+      <span class="nav-title">AI HEALTH ASSISTANT</span>
+      <span class="nav-sub">AI HEATH TRACKER</span>
+    </div>
+  </div>
+
+  <div class="border-glow-card nav-tabs-glow" data-border-radius="24" data-glow-colors="#c084fc,#f472b6,#38bdf8" data-background-color="transparent">
+    <span class="edge-light"></span>
+    <div class="border-glow-inner nav-tabs-inner">
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="home" onclick="showPage('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="nav-tab" data-page="history" onclick="showPage('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      History
+    </button>
+    <button class="nav-tab" data-page="profile" onclick="showPage('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </button>
+  </div>
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <div class="lang-badge" id="currentLangBadge">🌐 EN</div>
+    <div class="nav-health-score" id="navHealthScore" title="Your Health Score">
+      <div class="score-ring">
+        <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(0,151,167,0.15)" stroke-width="3"/><circle id="scoreRingCircle" cx="18" cy="18" r="15.9" fill="none" stroke="#0097a7" stroke-width="3" stroke-dasharray="75 100" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg>
+        <span id="navScoreNum">75</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ PAGE: HOME ═══ -->
+<div class="page active" id="page-home">
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Your Personal<br/>
+        <span class="glow-text">Health Assistant</span>
+      </h1>
+      <p class="hero-desc">Describe your symptoms in any language — our ML model analyses them instantly and gives you a doctor-style health report with recommendations.</p>
+      <!-- ── Premium Language Selector ── -->
+      <div class="lang-selector-wrap">
+        <div class="lang-selector-label">🌐 Choose Language</div>
+        <div class="lang-cards-track" id="langPills">
+          <!-- gliding active pill -->
+          <span class="lang-glider" id="langGlider"></span>
+
+          <!-- English -->
+          <button class="lang-card active" data-lang="English" onclick="selectLanguage('English', this)">
+            <img class="lc-img-box" src="assets/langs/en.png" alt="English Icon" />
+            <span class="lc-name">English</span>
+            <span class="lc-script">ABC</span>
+            <span class="lc-check">✓</span>
+          </button>
+
+          <!-- Hindi -->
+          <button class="lang-card" data-lang="Hindi" onclick="selectLanguage('Hindi', this)">
+            <img class="lc-img-box" src="assets/langs/hi.png" alt="Hindi Icon" />
+            <span class="lc-name">Hindi</span>
+            <span class="lc-script">हिन्दी</span>
+            <span class="lc-check">✓</span>
+          </button>
+
+          <!-- Telugu -->
+          <button class="lang-card" data-lang="Telugu" onclick="selectLanguage('Telugu', this)">
+            <img class="lc-img-box" src="assets/langs/te.png" alt="Telugu Icon" />
+            <span class="lc-name">Telugu</span>
+            <span class="lc-script">తెలుగు</span>
+            <span class="lc-check">✓</span>
+          </button>
+
+          <!-- Tamil -->
+          <button class="lang-card" data-lang="Tamil" onclick="selectLanguage('Tamil', this)">
+            <img class="lc-img-box" src="assets/langs/ta.png" alt="Tamil Icon" />
+            <span class="lc-name">Tamil</span>
+            <span class="lc-script">தமிழ்</span>
+            <span class="lc-check">✓</span>
+          </button>
+
+          <!-- Kannada -->
+          <button class="lang-card" data-lang="Kannada" onclick="selectLanguage('Kannada', this)">
+            <img class="lc-img-box" src="assets/langs/kn.png" alt="Kannada Icon" />
+            <span class="lc-name">Kannada</span>
+            <span class="lc-script">ಕನ್ನಡ</span>
+            <span class="lc-check">✓</span>
+          </button>
+
+          <!-- Malayalam -->
+          <button class="lang-card" data-lang="Malayalam" onclick="selectLanguage('Malayalam', this)">
+            <img class="lc-img-box" src="assets/langs/ml.png" alt="Malayalam Icon" />
+            <span class="lc-name">Malayalam</span>
+            <span class="lc-script">മലയാളം</span>
+            <span class="lc-check">✓</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Search Row: bar + standalone mic + standalone analyse ── -->
+      <div class="search-row">
+        <!-- Search bar (no mic/analyse inside) with border glow -->
+        <div class="border-glow-card search-bar-glow" data-border-radius="50" data-glow-colors="#c084fc,#f472b6,#38bdf8" data-background-color="#ffffff">
+          <span class="edge-light"></span>
+          <div class="border-glow-inner search-bar-inner">
+        <div class="search-container">
+          <div class="search-bar glossy" id="searchBar">
+            <div class="search-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <input type="text" id="homeSearch" placeholder="Type your symptoms here..." autocomplete="off" oninput="updateSuggestions(this.value)" onkeydown="if(event.key==='Enter') goAnalyze()" />
+          </div>
+          <div class="suggestions-box" id="suggestionsBox"></div>
+        </div>
+          </div>
+        </div>
+
+        <!-- Standalone 3D Mic Button -->
+        <button class="hero-action-btn mic-hero-btn" id="homeMicBtn" onclick="startVoiceInput('homeSearch')" title="Speak your symptoms">
+          <div class="hab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </div>
+          <span class="hab-label">Speak</span>
+          <span class="hab-ripple"></span>
+        </button>
+
+        <!-- Standalone 3D Analyse Button -->
+        <button class="hero-action-btn analyse-hero-btn" onclick="goAnalyze()">
+          <div class="hab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <span class="hab-label">Analyse</span>
+          <span class="hab-shine"></span>
+        </button>
+      </div>
+
+      <!-- Quick Symptom Tags -->
+      <div class="quick-tags">
+        <span class="quick-label">Common:</span>
+        <button class="tag" onclick="addSymptom('Fever')">🌡️ Fever</button>
+        <button class="tag" onclick="addSymptom('Headache')">🤕 Headache</button>
+        <button class="tag" onclick="addSymptom('Cough')">😮‍💨 Cough</button>
+        <button class="tag" onclick="addSymptom('Fatigue')">😴 Fatigue</button>
+        <button class="tag" onclick="addSymptom('Nausea')">🤢 Nausea</button>
+        <button class="tag" onclick="addSymptom('Diarrhea')">💊 Diarrhea</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ INLINE ANALYSIS PANEL (loading + report) ═══ -->
+
+  <!-- ── Professional Loading Screen ── -->
+  <div id="homeLoadingPanel" style="display:none">
+    <div class="hload-wrap">
+      <!-- Scan ring -->
+      <div class="hload-scanner">
+        <svg class="hload-ring-svg" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(0,151,167,0.12)" stroke-width="8"/>
+          <circle class="hload-ring-spin" cx="80" cy="80" r="70" fill="none" stroke="url(#scanGrad)" stroke-width="8" stroke-dasharray="120 320" stroke-linecap="round"/>
+          <circle cx="80" cy="80" r="52" fill="none" stroke="rgba(0,151,167,0.07)" stroke-width="4"/>
+          <circle class="hload-ring-spin2" cx="80" cy="80" r="52" fill="none" stroke="url(#scanGrad2)" stroke-width="4" stroke-dasharray="60 267" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="scanGrad" x1="0" y1="0" x2="160" y2="160" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#0097a7"/><stop offset="1" stop-color="#4dd0e1" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="scanGrad2" x1="160" y1="0" x2="0" y2="160" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#4dd0e1"/><stop offset="1" stop-color="#0097a7" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <!-- Brain / AI icon inside ring -->
+        <div class="hload-center-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="20" fill="rgba(0,151,167,0.12)"/>
+            <!-- Neural nodes -->
+            <circle cx="24" cy="12" r="3" fill="#0097a7"/>
+            <circle cx="36" cy="20" r="3" fill="#0097a7"/>
+            <circle cx="36" cy="32" r="3" fill="#4dd0e1"/>
+            <circle cx="24" cy="38" r="3" fill="#0097a7"/>
+            <circle cx="12" cy="32" r="3" fill="#4dd0e1"/>
+            <circle cx="12" cy="20" r="3" fill="#0097a7"/>
+            <circle cx="24" cy="24" r="4" fill="#006978"/>
+            <!-- Connections -->
+            <line x1="24" y1="12" x2="36" y2="20" stroke="rgba(0,151,167,0.5)" stroke-width="1.5"/>
+            <line x1="36" y1="20" x2="36" y2="32" stroke="rgba(0,151,167,0.5)" stroke-width="1.5"/>
+            <line x1="36" y1="32" x2="24" y2="38" stroke="rgba(77,208,225,0.5)" stroke-width="1.5"/>
+            <line x1="24" y1="38" x2="12" y2="32" stroke="rgba(0,151,167,0.5)" stroke-width="1.5"/>
+            <line x1="12" y1="32" x2="12" y2="20" stroke="rgba(77,208,225,0.5)" stroke-width="1.5"/>
+            <line x1="12" y1="20" x2="24" y2="12" stroke="rgba(0,151,167,0.5)" stroke-width="1.5"/>
+            <line x1="24" y1="12" x2="24" y2="24" stroke="rgba(0,151,167,0.6)" stroke-width="1.5"/>
+            <line x1="36" y1="20" x2="24" y2="24" stroke="rgba(0,151,167,0.6)" stroke-width="1.5"/>
+            <line x1="36" y1="32" x2="24" y2="24" stroke="rgba(77,208,225,0.6)" stroke-width="1.5"/>
+            <line x1="24" y1="38" x2="24" y2="24" stroke="rgba(0,151,167,0.6)" stroke-width="1.5"/>
+            <line x1="12" y1="32" x2="24" y2="24" stroke="rgba(77,208,225,0.6)" stroke-width="1.5"/>
+            <line x1="12" y1="20" x2="24" y2="24" stroke="rgba(0,151,167,0.6)" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <!-- Pulse circles -->
+        <div class="hload-pulse p1"></div>
+        <div class="hload-pulse p2"></div>
+        <div class="hload-pulse p3"></div>
+      </div>
+
+      <div class="hload-title" id="hloadTitle">Analysing Your Symptoms</div>
+      <div class="hload-subtitle" id="hloadSub">Our AI model is processing your input...</div>
+
+      <!-- Step-by-step progress -->
+      <div class="hload-steps">
+        <div class="hload-step" id="hstep1">
+          <div class="hstep-icon-wrap">
+            <div class="hstep-icon">🔍</div>
+            <div class="hstep-connector"></div>
+          </div>
+          <div class="hstep-body">
+            <div class="hstep-title">Extracting Symptoms</div>
+            <div class="hstep-desc">Identifying keywords from your input</div>
+            <div class="hstep-bar"><div class="hstep-fill" id="hfill1"></div></div>
+          </div>
+        </div>
+        <div class="hload-step" id="hstep2">
+          <div class="hstep-icon-wrap">
+            <div class="hstep-icon">🧠</div>
+            <div class="hstep-connector"></div>
+          </div>
+          <div class="hstep-body">
+            <div class="hstep-title">Running ML Model</div>
+            <div class="hstep-desc">Random Forest classifying 142 features</div>
+            <div class="hstep-bar"><div class="hstep-fill" id="hfill2"></div></div>
+          </div>
+        </div>
+        <div class="hload-step" id="hstep3">
+          <div class="hstep-icon-wrap">
+            <div class="hstep-icon">📊</div>
+            <div class="hstep-connector"></div>
+          </div>
+          <div class="hstep-body">
+            <div class="hstep-title">Calculating Severity</div>
+            <div class="hstep-desc">Scoring confidence and risk level</div>
+            <div class="hstep-bar"><div class="hstep-fill" id="hfill3"></div></div>
+          </div>
+        </div>
+        <div class="hload-step" id="hstep4">
+          <div class="hstep-icon-wrap">
+            <div class="hstep-icon">💊</div>
+            <div class="hstep-connector"></div>
+          </div>
+          <div class="hstep-body">
+            <div class="hstep-title">Building Recommendations</div>
+            <div class="hstep-desc">Diet, medicines, precautions</div>
+            <div class="hstep-bar"><div class="hstep-fill" id="hfill4"></div></div>
+          </div>
+        </div>
+        <div class="hload-step" id="hstep5">
+          <div class="hstep-icon-wrap">
+            <div class="hstep-icon">🌐</div>
+          </div>
+          <div class="hstep-body">
+            <div class="hstep-title">Translating Report</div>
+            <div class="hstep-desc">Localising to your language</div>
+            <div class="hstep-bar"><div class="hstep-fill" id="hfill5"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overall progress bar -->
+      <div class="hload-progress-track">
+        <div class="hload-progress-fill" id="hloadBar"></div>
+        <div class="hload-progress-label"><span id="hloadPct">0</span>%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Inline Report Section ── -->
+  <div id="homeReportSection" style="display:none">
+    <div class="home-report-container">
+      <!-- Report Action Bar -->
+      <div class="report-actions-bar">
+        <h2 class="report-title">📋 Health Report</h2>
+        <div class="report-actions">
+          <button class="action-btn tts-btn" id="ttsBtn" onclick="toggleTTS()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+            <span id="ttsBtnText">Speak Report</span>
+          </button>
+          <button class="action-btn dl-btn" onclick="downloadPDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF
+          </button>
+          <button class="action-btn new-btn" onclick="newAnalysis()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            New Analysis
+          </button>
+        </div>
+      </div>
+      <!-- Bento Grid -->
+      <div class="bento-grid" id="bentoGrid">
+        
+        <!-- Quick Assessment Banner (Spans full width) -->
+        <div class="bento-card quick-assessment-card" id="quickAssessmentCard" style="display:none; grid-column: 1 / -1; background: linear-gradient(135deg, rgba(255,243,205,0.9) 0%, rgba(255,236,179,0.9) 100%); border-left: 5px solid #ffb300;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="font-size:2.2rem;">⚡</div>
+            <div>
+              <h3 style="color:#d84315; margin-bottom:4px; font-weight:700; font-size:1.1rem;">Quick Assessment Mode</h3>
+              <p style="color:#4e342e; font-size:0.9rem; margin:0;">Analyzing based on ${symptom_count} symptoms. For a full ML prediction using Random Forest, please describe your symptoms in more detail (3+ symptoms).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bento-card diagnosis-card" id="diagnosisCard">
+          <div class="diagnosis-top">
+            <div class="severity-badge" id="severityBadge">🟢 Normal</div>
+            <div class="confidence-badge" id="confidenceBadge">85%</div>
+          </div>
+          <div class="diagnosis-disease" id="diagnosisDisease">Disease Name</div>
+          <div class="diagnosis-desc" id="diagnosisDesc">Severity description</div>
+          <div class="diagnosis-symptoms" id="diagnosisSymptoms"></div>
+          <div class="alt-predictions" id="altPredictions"></div>
+        </div>
+        <div class="bento-card" id="precautionsCard">
+          <div class="bento-card-header"><div class="bento-icon">🛡️</div><h3>Precautions</h3></div>
+          <ul class="bento-list" id="precautionsList"></ul>
+        </div>
+        <div class="bento-card food-eat-card" id="foodEatCard">
+          <div class="bento-card-header"><div class="bento-icon">✅</div><h3>Recommended Foods</h3></div>
+          <ul class="bento-list" id="foodEatList"></ul>
+        </div>
+        <div class="bento-card food-avoid-card" id="foodAvoidCard">
+          <div class="bento-card-header"><div class="bento-icon">🚫</div><h3>Foods to Avoid</h3></div>
+          <ul class="bento-list avoid-list" id="foodAvoidList"></ul>
+        </div>
+        
+        <!-- Basic Medication Card (for Quick Assessment) -->
+        <div class="bento-card basic-med-card" id="basicMedCard" style="display:none;">
+          <div class="bento-card-header"><div class="bento-icon">💊</div><h3>Basic Medication Guide (OTC)</h3></div>
+          <ul class="bento-list basic-med-list" id="basicMedList" style="list-style-type: none; padding:0;"></ul>
+        </div>
+
+        <div class="bento-card medicine-card" id="medicineCard">
+          <div class="bento-card-header"><div class="bento-icon">💊</div><h3>Medical Suggestions</h3></div>
+          <ul class="bento-list" id="medicineList"></ul>
+        </div>
+        <div class="bento-card doctor-card" id="doctorCard">
+          <div class="bento-card-header"><div class="bento-icon">🏥</div><h3>When to See a Doctor</h3></div>
+          <p class="doctor-text" id="doctorText"></p>
+          <div class="emergency-pulse" id="emergencyPulse" style="display:none"><span>⚠️ Emergency — Seek Immediate Care</span></div>
+        </div>
+        <div class="bento-card score-card" id="scoreCard">
+          <div class="bento-card-header"><div class="bento-icon">📊</div><h3>Health Score</h3></div>
+          <div class="score-donut-wrap">
+            <div class="score-donut">
+              <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,151,167,0.12)" stroke-width="12"/>
+                <circle id="scoreDonut" cx="60" cy="60" r="50" fill="none" stroke="#0097a7" stroke-width="12" stroke-dasharray="314" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              </svg>
+              <div class="score-center">
+                <span class="score-num" id="scoreNum">75</span>
+                <small>/100</small>
+              </div>
+            </div>
+            <div class="score-info" id="scoreInfo">
+              <div class="score-metric"><span>Severity</span><b id="scoreMetricSeverity">Normal</b></div>
+              <div class="score-metric"><span>Confidence</span><b id="scoreMetricConf">--</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="disclaimer-small">⚠️ This AI report is for informational purposes only. Please consult a qualified physician for proper diagnosis and treatment.</p>
+    </div>
+  </div>
+
+  <!-- Health Journey Chart (Today's status) -->
+  <section class="chart-section" style="margin-top: 40px;">
+    <h2 class="section-title">Your Health Journey</h2>
+    <div class="chart-container glass">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Weekly Health Score</div>
+          <div class="chart-sub">Based on your symptom analyses</div>
+        </div>
+        <div class="chart-score-badge" id="chartScoreBadge">
+          <span id="avgScoreText">--</span>
+          <small>avg score</small>
+        </div>
+      </div>
+      <canvas id="healthChart" width="800" height="180"></canvas>
+      <div class="chart-labels" id="chartLabels"></div>
+    </div>
+  </section>
+
+  <!-- Feature Cards (Scroll Stack) -->
+  <section class="features-section">
+    <h2 class="section-title">How It Works</h2>
+    <div class="scroll-stack-scroller">
+      <div class="scroll-stack-inner">
+        <div class="scroll-stack-card feature-card glass">
+          <div class="feature-num">01</div>
+          <div class="feature-icon">✍️</div>
+          <h3>Describe Symptoms</h3>
+          <p>Type or speak your symptoms in your preferred language — English, Hindi, Telugu, Tamil, Kannada, or Malayalam.</p>
+        </div>
+        <div class="scroll-stack-card feature-card glass">
+          <div class="feature-num">02</div>
+          <div class="feature-icon">🤖</div>
+          <h3>AI Analyses</h3>
+          <p>Our Random Forest ML model processes 142 symptoms to identify the most likely condition with confidence scoring.</p>
+        </div>
+        <div class="scroll-stack-card feature-card glass">
+          <div class="feature-num">03</div>
+          <div class="feature-icon">📋</div>
+          <h3>Get Your Report</h3>
+          <p>Receive a detailed doctor-style report with precautions, diet recommendations, medicines, and severity level.</p>
+        </div>
+        <div class="scroll-stack-card feature-card glass">
+          <div class="feature-num">04</div>
+          <div class="feature-icon">📥</div>
+          <h3>Download & Share</h3>
+          <p>Download your report as PDF, listen to it in your language, or share it with your doctor.</p>
+        </div>
+        <div class="scroll-stack-end"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Support -->
+  <section class="support-section">
+    <div class="support-card glass">
+      <div class="support-icon">💬</div>
+      <div class="support-text">
+        <h3>Need Help?</h3>
+        <p>Our support team is available 24/7 for any queries about the AI Health Assistant.</p>
+      </div>
+      <div class="support-actions">
+        <a href="mailto:support@aihealthassistant.in" class="support-btn">✉️ Email Support</a>
+        <a href="tel:+911800000000" class="support-btn secondary">📞 Helpline</a>
+      </div>
+    </div>
+    <div class="disclaimer-card glass">
+      <div class="disclaimer-icon">⚠️</div>
+      <p><strong>Medical Disclaimer:</strong> This tool is for informational purposes only and does not replace professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for medical decisions.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ PAGE: HISTORY ═══ -->
+<div class="page" id="page-history">
+  <div class="page-container">
+    <div class="page-header">
+      <h2>🕐 History</h2>
+      <p>Your past symptom analyses and reports</p>
+    </div>
+
+    <div class="history-toolbar">
+      <div class="history-search glossy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="historySearch" placeholder="Search history..." oninput="filterHistory(this.value)" />
+      </div>
+      <button class="clear-history-btn" onclick="clearHistory()">🗑️ Clear All</button>
+    </div>
+
+    <!-- History List -->
+    <div id="historyList" class="history-list"></div>
+    <div id="historyEmpty" class="empty-state" style="display:none">
+      <div class="empty-icon">📋</div>
+      <h3>No History Yet</h3>
+      <p>Run your first symptom analysis to see your health history here</p>
+      <button class="action-btn" onclick="showPage('home'); setTimeout(() => document.getElementById('homeSearch').focus(), 100);" style="margin: 0 auto; display: inline-flex; justify-content: center;">Start Analysis</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ PAGE: PROFILE ═══ -->
+<div class="page" id="page-profile">
+  <div class="page-container">
+    <div class="page-header">
+      <h2>👤 Profile</h2>
+      <p>Manage your personal health profile</p>
+    </div>
+
+    <div class="profile-grid">
+
+      <!-- Avatar Card -->
+      <div class="profile-avatar-card glass">
+        <div class="avatar-wrap" onclick="changeAvatar()">
+          <div class="avatar" id="profileAvatar">
+            <svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="40" fill="url(#avGrad)"/><circle cx="40" cy="32" r="14" fill="rgba(255,255,255,0.9)"/><ellipse cx="40" cy="72" rx="22" ry="14" fill="rgba(255,255,255,0.9)"/><defs><linearGradient id="avGrad" x1="0" y1="0" x2="80" y2="80"><stop stop-color="#4dd0e1"/><stop offset="1" stop-color="#006978"/></linearGradient></defs></svg>
+          </div>
+          <div class="avatar-edit">✏️</div>
+        </div>
+        <input type="text" id="profileName" class="profile-name-input" placeholder="Your Name" value="" onchange="saveProfile()" />
+        <div class="profile-since">Member since <span id="memberSince">--</span></div>
+        <div class="profile-stats">
+          <div class="profile-stat"><span id="totalAnalyses">0</span><small>Analyses</small></div>
+          <div class="profile-stat"><span id="healthScoreDisplay">--</span><small>Health Score</small></div>
+          <div class="profile-stat"><span id="streakDays">0</span><small>Day Streak</small></div>
+        </div>
+      </div>
+
+      <!-- Health Metrics -->
+      <div class="profile-metrics-card glass">
+        <h3>📏 Health Metrics</h3>
+        <div class="metrics-form">
+          <div class="metric-row">
+            <label>Age</label>
+            <div class="metric-input-wrap">
+              <input type="number" id="profileAge" placeholder="25" min="1" max="120" onchange="saveProfile()" />
+              <span class="unit">years</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <label>Height</label>
+            <div class="metric-input-wrap">
+              <input type="number" id="profileHeight" placeholder="170" min="50" max="250" onchange="saveProfile(); calcBMI()" />
+              <span class="unit">cm</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <label>Weight</label>
+            <div class="metric-input-wrap">
+              <input type="number" id="profileWeight" placeholder="70" min="10" max="300" onchange="saveProfile(); calcBMI()" />
+              <span class="unit">kg</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <label>Blood Group</label>
+            <select id="profileBlood" onchange="saveProfile()">
+              <option value="">Select</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+          <div class="metric-row">
+            <label>Gender</label>
+            <select id="profileGender" onchange="saveProfile()">
+              <option value="">Select</option>
+              <option>Male</option><option>Female</option><option>Other</option>
+            </select>
+          </div>
+          <!-- BMI Display -->
+          <div class="bmi-display" id="bmiDisplay" style="display:none">
+            <div class="bmi-label">BMI</div>
+            <div class="bmi-value" id="bmiValue">--</div>
+            <div class="bmi-status" id="bmiStatus">--</div>
+            <div class="bmi-bar-wrap"><div class="bmi-bar" id="bmiBar"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Goals -->
+      <div class="profile-goals-card glass" style="padding: 24px;">
+        <h3 style="font-size: 0.97rem; font-weight: 700; margin-bottom: 18px; color: var(--navy);">🎯 Health Goals</h3>
+        <div class="metrics-form">
+          <div class="metric-row">
+            <label>Daily Steps Goal</label>
+            <div class="metric-input-wrap">
+              <input type="number" id="goalSteps" placeholder="10000" onchange="saveProfile()" />
+              <span class="unit" style="font-size: 0.75rem; color: var(--text3);">steps</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <label>Water Intake</label>
+            <div class="metric-input-wrap">
+              <input type="number" id="goalWater" placeholder="2.5" step="0.1" onchange="saveProfile()" />
+              <span class="unit" style="font-size: 0.75rem; color: var(--text3);">litres</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <label>Sleep Goal</label>
+            <div class="metric-input-wrap">
+              <input type="number" id="goalSleep" placeholder="8" onchange="saveProfile()" />
+              <span class="unit" style="font-size: 0.75rem; color: var(--text3);">hours</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="profile-prefs-card glass">
+        <h3>⚙️ Preferences</h3>
+        <div class="pref-row">
+          <span>Default Language</span>
+          <select id="prefLang" onchange="saveProfile(); selectLanguage(this.value, null)">
+            <option value="English">🇬🇧 English</option>
+            <option value="Hindi">🇮🇳 Hindi</option>
+            <option value="Telugu">Telugu</option>
+            <option value="Tamil">Tamil</option>
+            <option value="Kannada">Kannada</option>
+            <option value="Malayalam">Malayalam</option>
+          </select>
+        </div>
+        <div class="pref-row">
+          <span>Auto-Save Reports</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="autoSave" checked onchange="saveProfile()" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="pref-row">
+          <span>TTS Auto-Play</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="ttsAuto" onchange="saveProfile()" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="pref-row">
+          <span>Emergency Alerts</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="emergAlerts" checked onchange="saveProfile()" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Medical History -->
+      <div class="profile-history-card glass">
+        <h3>🩺 Known Conditions</h3>
+        <div class="condition-tags" id="conditionTags"></div>
+        <div class="add-condition">
+          <input type="text" id="newCondition" placeholder="Add condition..." onkeydown="if(event.key==='Enter') addCondition()" />
+          <button onclick="addCondition()">+ Add</button>
+        </div>
+        <div class="allergies-section">
+          <h4>Allergies</h4>
+          <input type="text" id="profileAllergies" placeholder="e.g. Penicillin, Peanuts..." onchange="saveProfile()" />
+        </div>
+        <div class="medications-section">
+          <h4>Current Medications</h4>
+          <textarea id="profileMedications" placeholder="List any current medications..." rows="2" onchange="saveProfile()"></textarea>
+        </div>
+      </div>
+
+    </div><!-- /profile-grid -->
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ AUDIO HIDDEN ═══ -->
+<audio id="ttsAudio" style="display:none"></audio>
+
+<!-- ═════════════════════════════════════════════════ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<script src="border-glow.js"></script>
+<script src="magic-bento.js"></script>
+<script src="app.js"></script>
+<script src="dock.js"></script>
+<script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+<script src="scroll-stack.js"></script>
+</body>
+</html>
