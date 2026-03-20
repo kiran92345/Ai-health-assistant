@@ -157,11 +157,19 @@ class ScrollStack {
       const lenisOptions = this.useWindowScroll ? {
         duration: 1.2,
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        touchMultiplier: 2,
+        syncTouch: true,
+        syncTouchLerp: 0.075
       } : {
         wrapper: this.container,
         content: this.container.querySelector('.scroll-stack-inner'),
         duration: 1.2,
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        touchMultiplier: 2,
+        syncTouch: true,
+        syncTouchLerp: 0.075
       };
       
       this.lenis = new Lenis(lenisOptions);

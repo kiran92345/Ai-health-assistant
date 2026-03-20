@@ -1690,3 +1690,55 @@ canvas { max-width: 100%; }
   width: 100%;
   height: 1px;
 }
+
+/* ═══ MOBILE OPTIMIZATION ═══ */
+@media (max-width: 768px) {
+  .hero-title { font-size: 2.2rem; }
+  
+  /* Fix Search Row overflowing */
+  .search-row { 
+    flex-wrap: wrap; 
+    justify-content: center; 
+  }
+  .search-row .border-glow-card.search-bar-glow { 
+    flex: 1 1 100%; 
+    max-width: 100%; 
+    margin-bottom: 12px; 
+  }
+  .search-row .search-container { 
+    margin: 0; 
+  }
+  .search-row .search-bar { 
+    height: 60px; 
+  }
+  .hero-action-btn.mic-hero-btn { 
+    width: 60px; 
+    height: 60px; 
+  }
+  .hero-action-btn.analyse-hero-btn { 
+    height: 60px; 
+    flex: 1; 
+  }
+  
+  /* Fix Scroll Stack on Mobile */
+  .scroll-stack-inner {
+    padding: 2vh 0 15vh;
+  }
+  .scroll-stack-card.feature-card { 
+    padding: 1.5rem; 
+    height: auto; 
+    margin: 15px 0;
+    border-radius: 20px;
+  }
+  .scroll-stack-card.feature-card .feature-num { 
+    right: 1.5rem; 
+    top: 1.5rem; 
+    font-size: 2.5rem; 
+  }
+  .scroll-stack-card.feature-card .feature-icon {
+    font-size: 2rem;
+  }
+  .scroll-stack-card.feature-card h3 {
+    font-size: 1.25rem;
+  }
+}
