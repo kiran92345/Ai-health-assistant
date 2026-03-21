@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
       page: 'home',
       className: 'dock-item--main',
       itemSize: isDesktop ? 62 : 54,
-      iconScale: isDesktop ? 0.64 : 0.62,
+      iconScale: isDesktop ? 0.90 : 0.62,
       onClick: () => { if(typeof showPage==='function') showPage('home'); }
     },
     {
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
       page: 'history',
       className: 'dock-item--main',
       itemSize: isDesktop ? 62 : 54,
-      iconScale: isDesktop ? 0.64 : 0.62,
+      iconScale: isDesktop ? 0.90 : 0.62,
       onClick: () => { if(typeof showPage==='function') showPage('history'); }
     },
     {
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
       page: 'profile',
       className: 'dock-item--main',
       itemSize: isDesktop ? 62 : 54,
-      iconScale: isDesktop ? 0.64 : 0.62,
+      iconScale: isDesktop ? 0.90 : 0.62,
       onClick: () => { if(typeof showPage==='function') showPage('profile'); }
     },
     { 
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
       label: 'Settings', 
       className: 'dock-item--settings',
       itemSize: isDesktop ? 62 : 54,
-      iconScale: isDesktop ? 0.64 : 0.62,
+      iconScale: isDesktop ? 0.35 : 0.62,
       onClick: () => alert('Settings module is currently under development!') 
     }
   ];
