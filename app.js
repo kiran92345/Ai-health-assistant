@@ -10,6 +10,8 @@ let recognition = null;
 let conditions = [];
 let selectedMajorSymptoms = [];   // Selected from major symptoms panel
 let selectedMinorSymptoms = [];   // From description/mic (or future minor panel)
+let selectedDurationDays = null;
+let selectedGender = '';
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -107,10 +109,7 @@ function goAnalyze() {
   const text = document.getElementById('homeSearch').value.trim();
   if (!text) { showToast('⚠️ Please type or speak your symptoms first', 'warning'); return; }
   hideSuggestions();
-  // Copy text to symptomInput (kept for analysis function)
-  const si = document.getElementById('symptomInput');
-  if (si) { si.value = text; }
-  runAnalysis();
+  openSymptomModal(text);
 }
 
 function addSymptom(sym) {
@@ -244,10 +243,9 @@ async function runAnalysis() {
   const subEl  = document.getElementById('hloadSub');
   let pct = 0;
 
-  // ── Step timings: spread over ~1.2s to speed up analysis
-  // Step 1: 0ms  Step 2: 250ms  Step 3: 500ms  Step 4: 750ms  Step 5: 1000ms
-  const stepStart = [0, 250, 500, 750, 1000];
-  const stepDur   = [200, 250, 250, 250, 200]; // ms each step fill takes
+  // ── Step timings: premium 5-6s flow
+  const stepStart = [0, 1100, 2300, 3600, 4800];
+  const stepDur   = [900, 900, 900, 900, 850];
 
   function activateStep(i) {
     // Mark prev as done
@@ -272,13 +270,13 @@ async function runAnalysis() {
   // Smooth overall bar
   const targetStep = (stepIdx, pct) => stepIdx === 4 ? 95 : (stepIdx + 1) * 19;
   const barInt = setInterval(() => {
-    pct = Math.min(pct + 3, 92);
+    pct = Math.min(pct + 0.8, 96);
     if (bar) bar.style.width = pct + '%';
     if (pctEl) pctEl.textContent = Math.round(pct);
-  }, 40);
+  }, 45);
 
   try {
-    const resp = await fetch(`${API_BASE}/api/analyze`, {
+    const apiCallPromise = fetch(`${API_BASE}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -286,17 +284,36 @@ async function runAnalysis() {
         minor_symptoms: selectedMinorSymptoms,
         description   : text,
         symptoms_text : text,   // legacy fallback
-        language      : currentLang
+        language      : currentLang,
+        duration_days : selectedDurationDays,
+        gender        : selectedGender
       })
     });
+    // Ensure analysis experience doesn't feel instant/flashing
+    const [resp] = await Promise.all([apiCallPromise, sleep(5200)]);
 
     clearInterval(barInt);
     if (bar) { bar.style.transition = 'width 0.4s ease'; bar.style.width = '100%'; }
     if (pctEl) pctEl.textContent = '100';
 
-    if (!resp.ok) { const err = await resp.json(); throw new Error(err.error || 'Analysis failed'); }
+    let data;
+    try {
+      const contentType = resp.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await resp.json();
+      } else {
+        const textResp = await (resp.text ? resp.text() : '');
+        throw new Error(textResp ? `Unexpected response format: ${textResp.slice(0, 50)}...` : 'Empty response from backend');
+      }
+    } catch (parseErr) {
+      throw new Error(`Failed to parse backend response: ${parseErr.message}`);
+    }
 
-    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data?.error || `Analysis failed (Status ${resp.status})`);
+    }
+
+    currentReport = data;
     currentReport = data;
 
     // Mark last step done
@@ -307,7 +324,7 @@ async function runAnalysis() {
     const autoSave = document.getElementById('autoSave');
     if (!autoSave || autoSave.checked) saveToHistory(data);
 
-    await sleep(200);
+    await sleep(260);
 
     // ── Hide loading, show report
     if (loadPanel) loadPanel.style.display = 'none';
@@ -329,6 +346,118 @@ async function runAnalysis() {
     if (defContent) defContent.style.display = '';
     showToast(`❌ ${err.message}`, 'error');
   }
+}
+
+// ─── Symptom Review Popup ────────────────────────────────────────────────────
+function createSymptomPill(name, lane) {
+  const pill = document.createElement('button');
+  pill.type = 'button';
+  pill.className = `symptom-pill ${lane}`;
+  pill.textContent = name;
+  pill.draggable = true;
+  pill.dataset.symptom = name;
+  pill.dataset.lane = lane;
+  pill.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', JSON.stringify({ symptom: name, lane }));
+  });
+  pill.addEventListener('click', () => {
+    moveSymptomPill(name, lane === 'major' ? 'minor' : 'major');
+  });
+  return pill;
+}
+
+function syncModalSelectionsFromDOM() {
+  const majorZone = document.getElementById('majorDropzone');
+  const minorZone = document.getElementById('minorDropzone');
+  selectedMajorSymptoms = Array.from(majorZone.querySelectorAll('.symptom-pill')).map(el => el.dataset.symptom);
+  selectedMinorSymptoms = Array.from(minorZone.querySelectorAll('.symptom-pill')).map(el => el.dataset.symptom);
+}
+
+function moveSymptomPill(symptom, targetLane) {
+  const majorZone = document.getElementById('majorDropzone');
+  const minorZone = document.getElementById('minorDropzone');
+  const allPills = document.querySelectorAll('.symptom-pill');
+  allPills.forEach(p => {
+    if (p.dataset.symptom === symptom) p.remove();
+  });
+  const target = targetLane === 'major' ? majorZone : minorZone;
+  target.appendChild(createSymptomPill(symptom, targetLane));
+  syncModalSelectionsFromDOM();
+}
+
+function setupDropzone(dropzone, lane) {
+  dropzone.addEventListener('dragover', (e) => e.preventDefault());
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    try {
+      const payload = JSON.parse(e.dataTransfer.getData('text/plain'));
+      if (payload?.symptom) moveSymptomPill(payload.symptom, lane);
+    } catch (_) {}
+  });
+}
+
+async function openSymptomModal(text) {
+  const modal = document.getElementById('symptomModal');
+  const majorZone = document.getElementById('majorDropzone');
+  const minorZone = document.getElementById('minorDropzone');
+  if (!modal || !majorZone || !minorZone) {
+    runAnalysis();
+    return;
+  }
+  majorZone.innerHTML = '';
+  minorZone.innerHTML = '';
+  selectedMajorSymptoms = [];
+  selectedMinorSymptoms = [];
+
+  setupDropzone(majorZone, 'major');
+  setupDropzone(minorZone, 'minor');
+
+  let extracted = [];
+  try {
+    const resp = await fetch(`${API_BASE}/api/symptoms/extract`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, language: currentLang })
+    });
+    if (resp.ok) {
+      const contentType = resp.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const data = await resp.json();
+        extracted = Array.isArray(data.symptoms) ? data.symptoms : [];
+      }
+    }
+  } catch (_) {}
+
+  if (!extracted.length) {
+    extracted = text.split(',').map(s => s.trim()).filter(Boolean).slice(0, 10);
+  }
+  extracted.forEach((sym, idx) => {
+    const lane = idx < Math.max(1, Math.ceil(extracted.length / 2)) ? 'major' : 'minor';
+    const zone = lane === 'major' ? majorZone : minorZone;
+    zone.appendChild(createSymptomPill(sym, lane));
+  });
+  syncModalSelectionsFromDOM();
+  modal.style.display = 'block';
+}
+
+function closeSymptomModal() {
+  const modal = document.getElementById('symptomModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function confirmSymptomSelection() {
+  syncModalSelectionsFromDOM();
+  const d = parseInt(document.getElementById('symptomDaysInput')?.value || '', 10);
+  selectedDurationDays = Number.isFinite(d) && d > 0 ? d : null;
+  selectedGender = (document.getElementById('symptomGenderInput')?.value || '').trim();
+
+  if (!selectedMajorSymptoms.length) {
+    showToast('⚠️ Please keep at least one major symptom', 'warning');
+    return;
+  }
+
+  closeSymptomModal();
+  runAnalysis();
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }

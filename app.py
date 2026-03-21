@@ -586,7 +586,7 @@ def get_basic_medication(disease):
 # ─────────────────────────────────────────────────────────────────────────────
 # MODEL TRAINING
 # ─────────────────────────────────────────────────────────────────────────────
-print("🌲 Training Random Forest Classifier...")
+print("Training Random Forest Classifier...")
 
 df_raw = pd.DataFrame(DISEASE_DATA)
 symptom_cols = [c for c in df_raw.columns if 'Symptom' in c]
@@ -622,7 +622,7 @@ rf_model = RandomForestClassifier(
     min_samples_leaf=1, class_weight='balanced', random_state=42, n_jobs=-1
 )
 rf_model.fit(X_train, y_train)
-print(f"✅ Model trained! Diseases: {len(le.classes_)}, Symptoms: {len(all_symptoms)}")
+print(f"Model trained. Diseases: {len(le.classes_)}, Symptoms: {len(all_symptoms)}")
 
 # Spell checker
 if SPELL_AVAILABLE:
@@ -894,100 +894,133 @@ def health_check():
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze():
-    data = request.get_json()
+    try:
+        data = request.get_json() or {}
 
-    # ── New 3-channel inputs from notebook ──────────────────────────────────
-    major_syms    = data.get('major_symptoms', [])   # list of selected symptom strings
-    minor_syms    = data.get('minor_symptoms', [])   # list of selected symptom strings
-    description   = data.get('description', '').strip()  # free-text description
-    # Legacy fallback: if only symptoms_text is sent (old frontend)
-    symptoms_text = data.get('symptoms_text', '').strip()
-    language      = data.get('language', 'English')
+        # ── New 3-channel inputs from notebook ──────────────────────────────────
+        major_syms    = data.get('major_symptoms', [])   # list of selected symptom strings
+        minor_syms    = data.get('minor_symptoms', [])   # list of selected symptom strings
+        description   = data.get('description', '').strip()  # free-text description
+        # Legacy fallback: if only symptoms_text is sent (old frontend)
+        symptoms_text = data.get('symptoms_text', '').strip()
+        language      = data.get('language', 'English')
+        duration_days = data.get('duration_days', None)
+        gender        = (data.get('gender', '') or '').strip()
 
-    if not major_syms and not minor_syms and not description and not symptoms_text:
-        return jsonify({'error': 'No symptoms provided'}), 400
+        if not major_syms and not minor_syms and not description and not symptoms_text:
+            return jsonify({'error': 'No symptoms provided'}), 400
 
-    # ── Extract from description / legacy text ────────────────────────────
-    desc_syms = []
-    if description:
-        desc_en   = detect_and_translate_to_english(description)
-        desc_syms = extract_symptoms_from_text(desc_en)
-    elif symptoms_text:
-        eng_text  = detect_and_translate_to_english(symptoms_text)
-        desc_syms = extract_symptoms_from_text(eng_text)
+        # ── Extract from description / legacy text ────────────────────────────
+        desc_syms = []
+        if description:
+            desc_en   = detect_and_translate_to_english(description)
+            desc_syms = extract_symptoms_from_text(desc_en)
+        elif symptoms_text:
+            eng_text  = detect_and_translate_to_english(symptoms_text)
+            desc_syms = extract_symptoms_from_text(eng_text)
 
-    # ── Normalize major/minor symptom labels ──────────────────────────────
-    def norm_list(lst):
-        out = []
-        for s in lst:
-            n = normalize_symptom(s)
-            out.append(n if n else s.strip().lower().replace(' ', '_'))
-        return [x for x in out if x]
+        # ── Normalize major/minor symptom labels ──────────────────────────────
+        def norm_list(lst):
+            out = []
+            for s in lst:
+                n = normalize_symptom(s)
+                out.append(n if n else s.strip().lower().replace(' ', '_'))
+            return [x for x in out if x]
 
-    major_norm = norm_list(major_syms)
-    minor_norm = norm_list(minor_syms)
-    all_syms   = list(set(major_norm + minor_norm + desc_syms))
+        major_norm = norm_list(major_syms)
+        minor_norm = norm_list(minor_syms)
+        all_syms   = list(set(major_norm + minor_norm + desc_syms))
 
-    if not all_syms:
-        return jsonify({'error': 'Could not extract symptoms. Describe your symptoms in more detail or add major/minor symptoms.'}), 400
+        if not all_syms:
+            return jsonify({'error': 'Could not extract symptoms. Describe your symptoms in more detail or add major/minor symptoms.'}), 400
 
-    # ── Predict ────────────────────────────────────────────────────────────
-    predictions = predict_disease(all_syms, top_n=3)
-    if not predictions:
-        return jsonify({'error': 'Could not make a prediction. Please add more symptoms.'}), 400
+        # ── Predict ────────────────────────────────────────────────────────────
+        predictions = predict_disease(all_syms, top_n=3)
+        if not predictions:
+            return jsonify({'error': 'Could not make a prediction. Please add more symptoms.'}), 400
 
-    top        = predictions[0]
-    disease    = top['disease']
-    confidence = top['confidence']
-    is_simple  = top.get('simple_mode', False)
+        top        = predictions[0]
+        disease    = top['disease']
+        confidence = top['confidence']
+        is_simple  = top.get('simple_mode', False)
 
-    sev_level, sev_emoji, sev_label, sev_desc = get_severity(all_syms, disease)
-    recs       = get_recommendations(disease)
-    basic_meds = get_basic_medication(disease) if is_simple else []
+        sev_level, sev_emoji, sev_label, sev_desc = get_severity(all_syms, disease)
+        # Duration-aware severity bump for longer-lasting complaints
+        try:
+            dd = int(duration_days) if duration_days is not None else None
+            if dd and dd >= 7 and sev_level < 3:
+                sev_level = min(3, sev_level + 1)
+                if sev_level == 2:
+                    sev_emoji, sev_label, sev_desc = '🟠', 'Moderate', 'Symptoms persisted over a week — consult a doctor soon'
+                elif sev_level == 3:
+                    sev_emoji, sev_label, sev_desc = '🔴', 'Emergency', 'Long-standing severe risk — seek medical care urgently'
+        except Exception:
+            pass
+        recs       = get_recommendations(disease)
+        basic_meds = get_basic_medication(disease) if is_simple else []
 
-    # ── Build report ───────────────────────────────────────────────────────
-    report = {
-        'timestamp'        : datetime.now().strftime('%d %b %Y, %I:%M %p'),
-        'major_symptoms'   : [s.replace('_', ' ').title() for s in major_norm],
-        'minor_symptoms'   : [s.replace('_', ' ').title() for s in minor_norm],
-        'desc_symptoms'    : [s.replace('_', ' ').title() for s in desc_syms],
-        'symptoms'         : [s.replace('_', ' ').title() for s in all_syms],
-        'symptom_count'    : len(all_syms),
-        'simple_mode'      : is_simple,
-        'disease'          : disease,
-        'confidence'       : f'{confidence:.1%}',
-        'confidence_raw'   : confidence,
-        'severity_level'   : sev_level,
-        'severity_emoji'   : sev_emoji,
-        'severity_label'   : sev_label,
-        'severity_desc'    : sev_desc,
-        'other_predictions': [
-            {'disease': p['disease'], 'confidence': p['confidence_pct']}
-            for p in predictions[1:]
-        ],
-        'precautions'        : recs['precautions'],
-        'foods_to_eat'       : recs['foods_to_eat'],
-        'foods_to_avoid'     : recs['foods_to_avoid'],
-        'medical_suggestions': recs['medical_suggestions'],
-        'doctor_when'        : recs['doctor_when'],
-        'basic_medication'   : basic_meds,
-        'language'           : language,
-    }
+        # ── Build report ───────────────────────────────────────────────────────
+        report = {
+            'timestamp'        : datetime.now().strftime('%d %b %Y, %I:%M %p'),
+            'major_symptoms'   : [s.replace('_', ' ').title() for s in major_norm],
+            'minor_symptoms'   : [s.replace('_', ' ').title() for s in minor_norm],
+            'desc_symptoms'    : [s.replace('_', ' ').title() for s in desc_syms],
+            'symptoms'         : [s.replace('_', ' ').title() for s in all_syms],
+            'symptom_count'    : len(all_syms),
+            'simple_mode'      : is_simple,
+            'disease'          : disease,
+            'confidence'       : f'{confidence:.1%}',
+            'confidence_raw'   : confidence,
+            'severity_level'   : sev_level,
+            'severity_emoji'   : sev_emoji,
+            'severity_label'   : sev_label,
+            'severity_desc'    : sev_desc,
+            'other_predictions': [
+                {'disease': p['disease'], 'confidence': p['confidence_pct']}
+                for p in predictions[1:]
+            ],
+            'precautions'        : recs['precautions'],
+            'foods_to_eat'       : recs['foods_to_eat'],
+            'foods_to_avoid'     : recs['foods_to_avoid'],
+            'medical_suggestions': recs['medical_suggestions'],
+            'doctor_when'        : recs['doctor_when'],
+            'basic_medication'   : basic_meds,
+            'language'           : language,
+            'duration_days'      : duration_days,
+            'gender'             : gender,
+        }
 
-    # ── Translate if needed ────────────────────────────────────────────────
-    if language != 'English' and TRANSLATOR_AVAILABLE:
-        report['disease_translated']             = translate_text(disease, language)
-        report['severity_label_translated']      = translate_text(sev_label, language)
-        report['severity_desc_translated']       = translate_text(sev_desc, language)
-        report['precautions_translated']         = translate_list(recs['precautions'], language)
-        report['foods_to_eat_translated']        = translate_list(recs['foods_to_eat'], language)
-        report['foods_to_avoid_translated']      = translate_list(recs['foods_to_avoid'], language)
-        report['medical_suggestions_translated'] = translate_list(recs['medical_suggestions'], language)
-        report['doctor_when_translated']         = translate_text(recs['doctor_when'], language)
-        if basic_meds:
-            report['basic_medication_translated'] = translate_list(basic_meds, language)
+        # ── Translate if needed ────────────────────────────────────────────────
+        if language != 'English' and TRANSLATOR_AVAILABLE:
+            report['disease_translated']             = translate_text(disease, language)
+            report['severity_label_translated']      = translate_text(sev_label, language)
+            report['severity_desc_translated']       = translate_text(sev_desc, language)
+            report['precautions_translated']         = translate_list(recs['precautions'], language)
+            report['foods_to_eat_translated']        = translate_list(recs['foods_to_eat'], language)
+            report['foods_to_avoid_translated']      = translate_list(recs['foods_to_avoid'], language)
+            report['medical_suggestions_translated'] = translate_list(recs['medical_suggestions'], language)
+            report['doctor_when_translated']         = translate_text(recs['doctor_when'], language)
+            if basic_meds:
+                report['basic_medication_translated'] = translate_list(basic_meds, language)
 
-    return jsonify(report)
+        return jsonify(report)
+    except Exception as e:
+        print(f"ANALYZE ERROR: {str(e)}")
+        return jsonify({'error': f"Backend Analysis Error: {str(e)}"}), 500
+
+@app.route('/api/symptoms/extract', methods=['POST'])
+def extract_symptoms_api():
+    data = request.get_json() or {}
+    text = (data.get('text', '') or '').strip()
+    language = (data.get('language', 'English') or 'English').strip()
+    if not text:
+        return jsonify({'symptoms': []})
+    src_text = text
+    if language != 'English':
+        src_text = detect_and_translate_to_english(text)
+    syms = extract_symptoms_from_text(src_text)
+    pretty = [s.replace('_', ' ').title() for s in syms]
+    return jsonify({'symptoms': pretty})
 
 @app.route('/api/disease/summary', methods=['GET'])
 def disease_summary():
@@ -1150,7 +1183,7 @@ def list_symptoms():
 import urllib.parse
 
 if __name__ == '__main__':
-    print("🚀 AI Health Assistant Backend starting...")
-    print(f"✅ Model trained: {len(le.classes_)} diseases, {len(all_symptoms)} symptoms")
-    print("🌐 Open: http://localhost:5000")
+    print("AI Health Assistant Backend starting...")
+    print(f"Model trained: {len(le.classes_)} diseases, {len(all_symptoms)} symptoms")
+    print("Open: http://localhost:5000")
     app.run(debug=False, host='0.0.0.0', port=5000)

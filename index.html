@@ -16,10 +16,10 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     new AuroraBackground('#aurora-container', {
-      colorStops: ["#3A29FF", "#FF94B4", "#FF3232"],
-      blend: 0.5,
+      colorStops: ["#3A29FF", "#F11111", "#FF3232",],
+      blend: 0.8,
       amplitude: 1.0,
-      speed: 1
+      speed: 10
     });
   });
 </script>
@@ -36,11 +36,28 @@
     </div>
   </div>
 
+  <div class="top-icon-nav" aria-label="Page switcher">
+    <button class="nav-tab active top-icon-btn" data-page="home" onclick="showPage('home')" title="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 10.5L12 4l8 6.5"/>
+        <path d="M6 9.8V19a1.2 1.2 0 0 0 1.2 1.2h9.6A1.2 1.2 0 0 0 18 19V9.8"/>
+        <path d="M10 20.2v-4.8h4v4.8"/>
+      </svg>
+    </button>
+    <button class="nav-tab top-icon-btn" data-page="history" onclick="showPage('history')" title="History">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/>
+        <path d="M3.5 4.5v3.5H7"/>
+        <path d="M12 7.4v5.1l3.6 2.2"/>
+      </svg>
+    </button>
+  </div>
+
   <div class="nav-right">
-    <button class="nav-profile-switch" type="button" onclick="showPage('profile')" title="Go to Profile" aria-label="Go to Profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
+    <button class="nav-tab nav-profile-switch top-icon-btn" data-page="profile" type="button" onclick="showPage('profile')" title="Go to Profile" aria-label="Go to Profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="3.6"/>
+        <path d="M5.5 19.5c1.8-2.7 4.1-4 6.5-4s4.7 1.3 6.5 4"/>
       </svg>
     </button>
   </div>
@@ -53,10 +70,10 @@
   <section class="hero">
     <div class="hero-content">
       <h1 class="hero-title">
-        Your Personal<br/>
-        <span class="glow-text">Health Assistant</span>
+        <span class="hero-gradient-text">Your personal</span><br/>
+        <span class="hero-gradient-text">Health Assistant</span>
       </h1>
-      <p class="hero-desc">Describe your symptoms in any language — our ML model analyses them instantly and gives you a doctor-style health report with recommendations.</p>
+      <p class="hero-desc">"Input your symptoms in any language to initiate a condition analysis."</p>
       <!-- ── Premium Language Selector ── -->
       <div class="lang-selector-wrap">
         <div class="lang-selector-label">🌐 Choose Language</div>
@@ -151,18 +168,51 @@
         </button>
       </div>
 
-      <!-- Quick Symptom Tags -->
-      <div class="quick-tags">
-        <span class="quick-label">Common:</span>
-        <button class="tag" onclick="addSymptom('Fever')">🌡️ Fever</button>
-        <button class="tag" onclick="addSymptom('Headache')">🤕 Headache</button>
-        <button class="tag" onclick="addSymptom('Cough')">😮‍💨 Cough</button>
-        <button class="tag" onclick="addSymptom('Fatigue')">😴 Fatigue</button>
-        <button class="tag" onclick="addSymptom('Nausea')">🤢 Nausea</button>
-        <button class="tag" onclick="addSymptom('Diarrhea')">💊 Diarrhea</button>
+      
+
+  <!-- ── Symptom Review Popup ── -->
+  <div class="symptom-modal" id="symptomModal" style="display:none;">
+    <div class="symptom-modal-backdrop" onclick="closeSymptomModal()"></div>
+    <div class="symptom-modal-card">
+      <div class="symptom-modal-head">
+        <h3>Review Symptoms Before Analysis</h3>
+        <button class="symptom-close-btn" type="button" onclick="closeSymptomModal()">✕</button>
+      </div>
+      <p class="symptom-modal-sub">Move each symptom to Major or Minor. Drag-and-drop is enabled; tap/click also works.</p>
+
+      <div class="symptom-lanes">
+        <div class="symptom-lane">
+          <div class="lane-title">Major Symptoms</div>
+          <div class="symptom-dropzone major" id="majorDropzone"></div>
+        </div>
+        <div class="symptom-lane">
+          <div class="lane-title">Minor Symptoms</div>
+          <div class="symptom-dropzone minor" id="minorDropzone"></div>
+        </div>
+      </div>
+
+      <div class="symptom-meta-grid">
+        <label class="symptom-meta-field">
+          <span>How many days are you facing this?</span>
+          <input type="number" id="symptomDaysInput" min="1" max="365" placeholder="e.g. 3" />
+        </label>
+        <label class="symptom-meta-field">
+          <span>Gender</span>
+          <select id="symptomGenderInput">
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="symptom-modal-actions">
+        <button class="action-btn new-btn" type="button" onclick="closeSymptomModal()">Cancel</button>
+        <button class="action-btn dl-btn" type="button" onclick="confirmSymptomSelection()">Analyze Now</button>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- ═══ INLINE ANALYSIS PANEL (loading + report) ═══ -->
 
@@ -446,8 +496,8 @@
         <p>Our support team is available 24/7 for any queries about the AI Health Assistant.</p>
       </div>
       <div class="support-actions">
-        <a href="mailto:support@aihealthassistant.in" class="support-btn">✉️ Email Support</a>
-        <a href="tel:+911800000000" class="support-btn secondary">📞 Helpline</a>
+        <a href="mailto:health@gmail.com.in" class="support-btn">✉️ Email Support</a>
+        <a href="tel:+919346674035" class="support-btn secondary">📞 Helpline</a>
       </div>
     </div>
     <div class="disclaimer-card glass">

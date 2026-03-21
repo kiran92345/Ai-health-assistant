@@ -136,6 +136,51 @@ body {
   box-shadow: var(--glow-teal);
 }
 
+.top-icon-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.top-icon-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05)) !important;
+  color: rgba(255,255,255,0.82);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.22) !important;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease, color 0.2s ease, box-shadow 0.25s ease;
+}
+.top-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+.top-icon-btn:hover {
+  color: #ffffff;
+  background: linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)) !important;
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.34) !important;
+}
+.top-icon-btn.active {
+  color: #4dd0e1;
+  background: linear-gradient(135deg, rgba(0,151,167,0.26), rgba(23,193,221,0.16)) !important;
+  border-color: rgba(77,208,225,0.5) !important;
+  box-shadow: 0 8px 20px rgba(0,151,167,0.26), 0 0 0 1px rgba(77,208,225,0.32), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+  animation: topNavIconPulse 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes topNavIconPulse {
+  0% { transform: scale(0.88); }
+  65% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
 .nav-right { display: flex; align-items: center; gap: 14px; margin-left: auto; flex-shrink: 0; }
 .lang-badge {
   font-size: 0.75rem; font-weight: 600; color: var(--teal);
@@ -143,26 +188,8 @@ body {
   padding: 4px 10px; border-radius: 20px;
 }
 .nav-profile-switch {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255,255,255,0.26);
-  background: rgba(255,255,255,0.12);
-  color: #ffffff;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.nav-profile-switch svg {
-  width: 17px;
-  height: 17px;
-}
-.nav-profile-switch:hover {
-  background: rgba(255,255,255,0.22);
-  border-color: rgba(255,255,255,0.4);
+  width: 44px;
+  height: 44px;
 }
 
 /* ═══ PAGES ═══ */
@@ -201,6 +228,36 @@ body {
   -webkit-text-fill-color: #b2ebf2;
   background: none;
   filter: none;
+}
+.hero-gradient-text {
+  display: inline-block;
+  background-image: linear-gradient(
+    90deg,
+    #5227ff,
+    #ff9ffc,
+    #b19eef,
+    #ffffff,
+    #5227ff
+  );
+  background-size: 300% 100%;
+  background-repeat: repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: heroGradientShift 17s ease-in-out infinite;
+  will-change: background-position;
+}
+@keyframes heroGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 .hero-desc { color: rgba(255,255,255,0.88); font-size: 1rem; line-height: 1.65; max-width: 560px; margin: 0 auto 28px; }
 
@@ -1254,6 +1311,130 @@ canvas { max-width: 100%; }
   100% { opacity: 1; transform: translateY(0); }
 }
 
+/* ═══ Symptom Review Popup ═══ */
+.symptom-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+}
+.symptom-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 10, 24, 0.62);
+  backdrop-filter: blur(8px);
+}
+.symptom-modal-card {
+  position: relative;
+  width: min(860px, calc(100vw - 28px));
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  margin: 20px auto;
+  background: rgba(11, 22, 44, 0.92);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 20px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.45);
+  padding: 18px;
+}
+.symptom-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.symptom-modal-head h3 {
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.symptom-close-btn {
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.symptom-modal-sub {
+  margin-top: 8px;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.82rem;
+}
+.symptom-lanes {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.symptom-lane .lane-title {
+  color: rgba(255,255,255,0.95);
+  font-size: 0.84rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.symptom-dropzone {
+  min-height: 110px;
+  border: 1px dashed rgba(255,255,255,0.26);
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+}
+.symptom-dropzone.major {
+  background: rgba(230, 81, 0, 0.14);
+}
+.symptom-dropzone.minor {
+  background: rgba(0, 151, 167, 0.13);
+}
+.symptom-pill {
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  cursor: grab;
+  user-select: none;
+}
+.symptom-pill.major {
+  background: rgba(255, 152, 0, 0.25);
+}
+.symptom-pill.minor {
+  background: rgba(0, 188, 212, 0.22);
+}
+.symptom-meta-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.symptom-meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.symptom-meta-field span {
+  color: rgba(255,255,255,0.88);
+  font-size: 0.78rem;
+}
+.symptom-meta-field input,
+.symptom-meta-field select {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 10px;
+  padding: 10px;
+  outline: none;
+}
+.symptom-modal-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 /* ═══ HISTORY PAGE ═══ */
 .page-container { max-width: 960px; margin: 0 auto; padding: 36px 28px; }
 .page-header { margin-bottom: 28px; }
@@ -1738,6 +1919,11 @@ canvas { max-width: 100%; }
   height: 1px;
 }
 
+/* Disable bottom popup dock when top icons are used */
+#magic-dock {
+  display: none !important;
+}
+
 /* ═══ MOBILE OPTIMIZATION ═══ */
 @media (max-width: 768px) {
   .hero-title { font-size: 2.2rem; }
@@ -1792,6 +1978,17 @@ canvas { max-width: 100%; }
   /* Keep only one page switcher (bottom dock) */
   .navbar .nav-tabs-glow, .navbar .nav-tabs {
     display: none !important;
+  }
+  .top-icon-nav {
+    gap: 10px;
+  }
+  .top-icon-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .top-icon-btn svg {
+    width: 18px;
+    height: 18px;
   }
 
   /* Make sure content isn't covered by bottom nav */
