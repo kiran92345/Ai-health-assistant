@@ -8,18 +8,23 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
-<script src="https://cdn.jsdelivr.net/npm/ogl@0.0.64/dist/ogl.umd.js"></script>
-<script src="AuroraBackground.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="floating-lines.js"></script>
 </head>
 <!-- ═══════════════════════════════════════════════ NEW BG ═══ -->
 <div id="aurora-container"></div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    new AuroraBackground('#aurora-container', {
-      colorStops: ["#3A29FF", "#FF94B4", "#FF3232"],
-      blend: 0.5,
-      amplitude: 1.0,
-      speed: 1
+    new FloatingLines('#aurora-container', {
+      enabledWaves: ["top","middle","bottom"],
+      lineCount: 5,
+      lineDistance: 5,
+      bendRadius: 5,
+      bendStrength: 3,
+      interactive: true,
+      parallax: true,
+      linesGradient: ["#17c1dd", "#0097a7", "#006978"],
+      mixBlendMode: 'screen'
     });
   });
 </script>
