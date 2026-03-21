@@ -54,6 +54,7 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
 #aurora-container {
@@ -1776,7 +1777,7 @@ canvas { max-width: 100%; }
     -webkit-backdrop-filter: blur(25px);
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     padding: 12px 16px;
-    padding-bottom: env(safe-area-inset-bottom, 12px); /* iPhone notch support */
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* Fixed notch support for Android */
     box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4);
     border-radius: 20px 20px 0 0;
   }
