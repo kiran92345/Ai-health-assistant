@@ -8,23 +8,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="floating-lines.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ogl@0.0.64/dist/ogl.umd.js"></script>
+<script src="AuroraBackground.js"></script>
 </head>
 <!-- ═══════════════════════════════════════════════ NEW BG ═══ -->
 <div id="aurora-container"></div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    new FloatingLines('#aurora-container', {
-      enabledWaves: ["top","middle","bottom"],
-      lineCount: 5,
-      lineDistance: 5,
-      bendRadius: 5,
-      bendStrength: 3,
-      interactive: true,
-      parallax: true,
-      linesGradient: ["#17c1dd", "#0097a7", "#006978"],
-      mixBlendMode: 'screen'
+    new AuroraBackground('#aurora-container', {
+      colorStops: ["#3A29FF", "#FF94B4", "#FF3232"],
+      blend: 0.5,
+      amplitude: 1.0,
+      speed: 1
     });
   });
 </script>
@@ -680,6 +675,22 @@
 
 <!-- ═════════════════════════════════════════════════ TOAST ═══ -->
 <div class="toast" id="toast"></div>
+
+<!-- ═════════════════════════════════════════ MOBILE BOTTOM NAV ═══ -->
+<div class="mobile-bottom-nav">
+  <button class="nav-tab active" data-page="home" onclick="showPage('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </button>
+  <button class="nav-tab" data-page="history" onclick="showPage('history')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    History
+  </button>
+  <button class="nav-tab" data-page="profile" onclick="showPage('profile')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profile
+  </button>
+</div>
 
 <script src="border-glow.js"></script>
 <script src="magic-bento.js"></script>

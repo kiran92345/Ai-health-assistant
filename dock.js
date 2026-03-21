@@ -26,7 +26,7 @@ class Dock {
       /* Default (Mobile) - Bottom, Horizontal */
       .dock-container {
         position: fixed;
-        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        bottom: 24px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 10000;
@@ -34,25 +34,21 @@ class Dock {
         flex-direction: row;
         align-items: flex-end;
         height: var(--panel-height);
-        pointer-events: none;
-        width: auto;
-        max-width: 90vw;
+        pointer-events: none; /* Let clicks pass through container */
       }
       .dock-panel {
         display: flex;
         flex-direction: row;
         align-items: flex-end;
-        gap: 8px;
-        padding: 6px 12px;
-        background: rgba(14, 22, 40, 0.82);
-        backdrop-filter: blur(28px) saturate(200%);
-        -webkit-backdrop-filter: blur(28px) saturate(200%);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 40px;
-        box-shadow: 
-          0 15px 50px rgba(0, 0, 0, 0.6),
-          inset 0 1px 2px rgba(255, 255, 255, 0.15);
-        pointer-events: auto;
+        gap: 12px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 26px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.6);
+        pointer-events: auto; /* Re-enable for panel */
       }
       .dock-item {
         position: relative;
@@ -60,16 +56,14 @@ class Dock {
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,246,251,0.9));
         box-shadow: 
-          0 4px 15px rgba(0, 0, 0, 0.3),
-          inset 0 1px 1px rgba(255, 255, 255, 0.2);
+          0 4px 10px rgba(0, 0, 0, 0.15),
+          0 0 0 1px rgba(255, 255, 255, 0.5),
+          inset 0 2px 0 rgba(255, 255, 255, 0.8);
         cursor: pointer;
-        color: white;
-        transition: width 0.15s cubic-bezier(0.2, 1, 0.3, 1), height 0.15s cubic-bezier(0.2, 1, 0.3, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), margin 0.15s cubic-bezier(0.2, 1, 0.3, 1);
+        color: var(--teal-dark, #006978);
+        transition: width 0.1s ease-out, height 0.1s ease-out, transform 0.2s ease, margin 0.1s ease-out;
       }
       .dock-icon-wrapper {
         display: flex;
@@ -94,20 +88,19 @@ class Dock {
       }
       .dock-tooltip {
         position: absolute;
-        bottom: 74px; /* Move tooltip above the dock on mobile */
-        top: auto;
+        top: -46px;
         left: 50%;
-        transform: translateX(-50%) translateY(10px) scale(0.8);
-        padding: 5px 12px;
-        background: rgba(0, 151, 167, 0.95);
+        transform: translateX(-50%) translateY(12px) scale(0.9);
+        padding: 6px 14px;
+        background: rgba(17, 40, 64, 0.9);
         color: #fff;
-        font-family: 'Outfit', sans-serif;
-        font-size: 0.75rem;
-        font-weight: 700;
-        border-radius: 12px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border-radius: 10px;
         opacity: 0;
         pointer-events: none;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: opacity 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         white-space: nowrap;
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         z-index: 100;
@@ -183,8 +176,6 @@ class Dock {
     this.items.forEach((item) => {
       const el = document.createElement('div');
       el.classList.add('dock-item');
-      el.classList.add('nav-tab');
-      if (item.page) el.dataset.page = item.page;
       if (item.hasFill) el.classList.add('has-fill');
       
       el.style.width = `${this.baseItemSize}px`;
@@ -281,25 +272,22 @@ document.addEventListener('DOMContentLoaded', () => {
     { 
       icon: icons.home, 
       label: 'Home', 
-      page: 'home',
       onClick: () => { if(typeof showPage==='function') showPage('home'); }
     },
     { 
       icon: icons.archive, 
-      label: 'History', 
-      page: 'history',
+      label: 'Archive', 
       onClick: () => { if(typeof showPage==='function') showPage('history'); }
     },
     { 
       icon: icons.profile, 
       label: 'Profile', 
-      page: 'profile',
       onClick: () => { if(typeof showPage==='function') showPage('profile'); }
     },
     { 
       icon: icons.settings, 
       label: 'Settings', 
-      onClick: () => showToast('⚙️ Settings module is under development!', 'info') 
+      onClick: () => alert('Settings module is currently under development!') 
     }
   ];
 
