@@ -36,34 +36,13 @@
     </div>
   </div>
 
-  <div class="border-glow-card nav-tabs-glow" data-border-radius="24" data-glow-colors="#c084fc,#f472b6,#38bdf8" data-background-color="transparent">
-    <span class="edge-light"></span>
-    <div class="border-glow-inner nav-tabs-inner">
-  <div class="nav-tabs">
-    <button class="nav-tab active" data-page="home" onclick="showPage('home')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Home
-    </button>
-    <button class="nav-tab" data-page="history" onclick="showPage('history')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      History
-    </button>
-    <button class="nav-tab" data-page="profile" onclick="showPage('profile')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Profile
-    </button>
-  </div>
-    </div>
-  </div>
-
   <div class="nav-right">
-    <div class="lang-badge" id="currentLangBadge">🌐 EN</div>
-    <div class="nav-health-score" id="navHealthScore" title="Your Health Score">
-      <div class="score-ring">
-        <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(0,151,167,0.15)" stroke-width="3"/><circle id="scoreRingCircle" cx="18" cy="18" r="15.9" fill="none" stroke="#0097a7" stroke-width="3" stroke-dasharray="75 100" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg>
-        <span id="navScoreNum">75</span>
-      </div>
-    </div>
+    <button class="nav-profile-switch" type="button" onclick="showPage('profile')" title="Go to Profile" aria-label="Go to Profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </button>
   </div>
 </nav>
 
@@ -510,6 +489,12 @@
 <div class="page" id="page-profile">
   <div class="page-container">
     <div class="page-header">
+      <button class="page-back-btn" type="button" onclick="showPage('home')" aria-label="Back to Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Back
+      </button>
       <h2>👤 Profile</h2>
       <p>Manage your personal health profile</p>
     </div>
@@ -675,22 +660,6 @@
 
 <!-- ═════════════════════════════════════════════════ TOAST ═══ -->
 <div class="toast" id="toast"></div>
-
-<!-- ═════════════════════════════════════════ MOBILE BOTTOM NAV ═══ -->
-<div class="mobile-bottom-nav">
-  <button class="nav-tab active" data-page="home" onclick="showPage('home')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Home
-  </button>
-  <button class="nav-tab" data-page="history" onclick="showPage('history')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    History
-  </button>
-  <button class="nav-tab" data-page="profile" onclick="showPage('profile')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    Profile
-  </button>
-</div>
 
 <script src="border-glow.js"></script>
 <script src="magic-bento.js"></script>

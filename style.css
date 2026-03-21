@@ -142,12 +142,27 @@ body {
   background: rgba(0,151,167,0.10); border: 1px solid rgba(0,151,167,0.25);
   padding: 4px 10px; border-radius: 20px;
 }
-.nav-health-score { cursor: pointer; }
-.score-ring { position: relative; width: 36px; height: 36px; }
-.score-ring svg { width: 36px; height: 36px; }
-.score-ring span {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-  font-size: 0.65rem; font-weight: 700; color: var(--teal);
+.nav-profile-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.26);
+  background: rgba(255,255,255,0.12);
+  color: #ffffff;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.nav-profile-switch svg {
+  width: 17px;
+  height: 17px;
+}
+.nav-profile-switch:hover {
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.4);
 }
 
 /* ═══ PAGES ═══ */
@@ -1244,6 +1259,29 @@ canvas { max-width: 100%; }
 .page-header { margin-bottom: 28px; }
 .page-header h2 { font-family: 'Outfit', sans-serif; font-size: 1.65rem; font-weight: 800; margin-bottom: 6px; color: var(--navy); }
 .page-header p { font-size: 0.85rem; color: var(--text2); }
+.page-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(0,151,167,0.26);
+  background: rgba(0,151,167,0.10);
+  color: var(--teal-dark);
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+.page-back-btn svg {
+  width: 15px;
+  height: 15px;
+}
+.page-back-btn:hover {
+  background: rgba(0,151,167,0.18);
+  border-color: rgba(0,151,167,0.4);
+}
 
 .history-toolbar { display: flex; gap: 12px; margin-bottom: 24px; align-items: center; }
 .history-search {
@@ -1700,11 +1738,6 @@ canvas { max-width: 100%; }
   height: 1px;
 }
 
-/* Hide mobile bottom nav by default */
-.mobile-bottom-nav {
-  display: none;
-}
-
 /* ═══ MOBILE OPTIMIZATION ═══ */
 @media (max-width: 768px) {
   .hero-title { font-size: 2.2rem; }
@@ -1756,63 +1789,13 @@ canvas { max-width: 100%; }
     font-size: 1.25rem;
   }
   
-  /* Disable desktop magic dock and top tabs on mobile to prevent duplicates */
-  #magic-dock, .navbar .nav-tabs-glow, .navbar .nav-tabs {
+  /* Keep only one page switcher (bottom dock) */
+  .navbar .nav-tabs-glow, .navbar .nav-tabs {
     display: none !important;
   }
-  
-  /* Mobile Bottom Navigation Bar - Independent & Clean */
-  .mobile-bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 9999;
-    justify-content: space-around;
-    align-items: center;
-    background: rgba(14, 22, 40, 0.95); /* Deeper solid color to prevent transparency glitches when scrolling */
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 12px 16px;
-    padding-bottom: env(safe-area-inset-bottom, 12px); /* iPhone notch support */
-    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4);
-    border-radius: 20px 20px 0 0;
-  }
-  
-  .mobile-bottom-nav .nav-tab {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.6);
-    background: transparent;
-    border: none;
-    transition: all 0.2s;
-    border-radius: 12px;
-  }
-  
-  .mobile-bottom-nav .nav-tab svg {
-    margin: 0 auto;
-    width: 22px;
-    height: 22px;
-  }
-  
-  .mobile-bottom-nav .nav-tab.active {
-    background: linear-gradient(135deg, rgba(0,151,167,0.25), rgba(23,193,221,0.15));
-    color: var(--teal-light, #4dd0e1);
-    border: 1px solid rgba(0,151,167,0.4);
-    box-shadow: 0 0 15px rgba(0,151,167,0.3);
-  }
-  
+
   /* Make sure content isn't covered by bottom nav */
   .page {
-    padding-bottom: 100px !important;
+    padding-bottom: 110px !important;
   }
 }

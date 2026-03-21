@@ -153,23 +153,27 @@ class ScrollStack {
       this.updateCardTransforms();
     };
     
-    if (typeof Lenis !== 'undefined') {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const shouldUseLenis = typeof Lenis !== 'undefined' && !isMobile && !prefersReducedMotion;
+
+    if (shouldUseLenis) {
       const lenisOptions = this.useWindowScroll ? {
-        duration: 1.2,
+        duration: 1.05,
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        touchMultiplier: 2,
+        touchMultiplier: 1,
         syncTouch: true,
-        syncTouchLerp: 0.075
+        syncTouchLerp: 0.09
       } : {
         wrapper: this.container,
         content: this.container.querySelector('.scroll-stack-inner'),
-        duration: 1.2,
+        duration: 1.05,
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        touchMultiplier: 2,
+        touchMultiplier: 1,
         syncTouch: true,
-        syncTouchLerp: 0.075
+        syncTouchLerp: 0.09
       };
       
       this.lenis = new Lenis(lenisOptions);
@@ -181,7 +185,6 @@ class ScrollStack {
       };
       requestAnimationFrame(raf);
     } else {
-      console.warn('Lenis is not available. Falling back to native scroll event.');
       (this.useWindowScroll ? window : this.container).addEventListener('scroll', handleScroll, { passive: true });
     }
     

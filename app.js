@@ -44,7 +44,11 @@ function showPage(name) {
     t.classList.toggle('active', t.dataset.page === name);
   });
   document.getElementById(`page-${name}`).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (window.magicDockInstance && typeof window.magicDockInstance.updateActive === 'function') {
+    window.magicDockInstance.updateActive(name);
+  }
+  const scrollBehavior = window.innerWidth <= 768 ? 'auto' : 'smooth';
+  window.scrollTo({ top: 0, behavior: scrollBehavior });
   if (name === 'history') renderHistory();
   if (name === 'home') renderChart();
 }
@@ -70,7 +74,8 @@ function selectLanguage(lang, btnEl) {
   }
   // Update navbar badge
   const codes = { English:'EN', Hindi:'HI', Telugu:'TE', Tamil:'TA', Kannada:'KN', Malayalam:'ML' };
-  document.getElementById('currentLangBadge').textContent = `🌐 ${codes[lang] || 'EN'}`;
+  const currentLangBadge = document.getElementById('currentLangBadge');
+  if (currentLangBadge) currentLangBadge.textContent = `🌐 ${codes[lang] || 'EN'}`;
   // Save to profile
   const prefSelect = document.getElementById('prefLang');
   if (prefSelect) prefSelect.value = lang;
@@ -467,9 +472,12 @@ function animateScore(score, sevLevel) {
 
   // Update nav score ring
   const navRing = document.getElementById('scoreRingCircle');
-  navRing.style.stroke = color;
-  navRing.setAttribute('stroke-dasharray', `${score} 100`);
-  document.getElementById('navScoreNum').textContent = score;
+  if (navRing) {
+    navRing.style.stroke = color;
+    navRing.setAttribute('stroke-dasharray', `${score} 100`);
+  }
+  const navScoreNum = document.getElementById('navScoreNum');
+  if (navScoreNum) navScoreNum.textContent = score;
 }
 
 // ─── TTS ──────────────────────────────────────────────────────────────────────
@@ -765,9 +773,10 @@ function updateNavScore() {
   if (!history.length) return;
   const latest = history[0];
   const score = calcHealthScore(latest.severity_level || 1, latest.confidence_raw || 0.5);
-  document.getElementById('navScoreNum').textContent = score;
+  const navScoreNum = document.getElementById('navScoreNum');
+  if (navScoreNum) navScoreNum.textContent = score;
   const ring = document.getElementById('scoreRingCircle');
-  ring.setAttribute('stroke-dasharray', `${score} 100`);
+  if (ring) ring.setAttribute('stroke-dasharray', `${score} 100`);
 
   // Update profile page stats
   const h = document.getElementById('healthScoreDisplay');
