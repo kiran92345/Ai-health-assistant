@@ -3,6 +3,11 @@ class ScrollStack {
     this.container = options.container || document.querySelector('.scroll-stack-scroller');
     if (!this.container) return;
     
+    // ── MOBILE EARLY EXIT: no scroll-stack JS on small screens ──
+    // CSS overrides all transforms to none !important on ≤768px
+    this.isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (this.isMobile) return; // skip all init for buttery-smooth mobile scroll
+    
     this.itemDistance = options.itemDistance || 100;
     this.itemScale = options.itemScale || 0.03;
     this.itemStackDistance = options.itemStackDistance || 30;

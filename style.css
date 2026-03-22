@@ -1924,75 +1924,327 @@ canvas { max-width: 100%; }
   display: none !important;
 }
 
-/* ═══ MOBILE OPTIMIZATION ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE & RESPONSIVE OPTIMIZATION — Full Overhaul
+   Targets: 768px (tablet) → 480px (large phone) → 360px (small phone)
+═══════════════════════════════════════════════════════════════ */
+
+/* ── GLOBAL PERF: Use GPU compositing on mobile-heavy elements ── */
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Disable expensive Aurora on mobile via reduced motion hint */
 @media (max-width: 768px) {
-  .hero-title { font-size: 2.2rem; }
-  
-  /* Fix Search Row overflowing */
-  .search-row { 
-    flex-wrap: wrap; 
-    justify-content: center; 
+  #aurora-container canvas {
+    image-rendering: pixelated;
+    will-change: auto;
   }
-  .search-row .border-glow-card.search-bar-glow { 
-    flex: 1 1 100%; 
-    max-width: 100%; 
-    margin-bottom: 12px; 
+}
+
+/* ══════════════ TABLET: 768px ══════════════ */
+@media (max-width: 768px) {
+
+  /* ── NAV ── */
+  .navbar {
+    height: auto;
+    min-height: var(--nav-h);
+    padding: 10px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  .search-row .search-container { 
-    margin: 0; 
-  }
-  .search-row .search-bar { 
-    height: 60px; 
-  }
-  .hero-action-btn.mic-hero-btn { 
-    width: 60px; 
-    height: 60px; 
-  }
-  .hero-action-btn.analyse-hero-btn { 
-    height: 60px; 
-    flex: 1; 
-  }
-  
-  /* Fix Scroll Stack on Mobile */
-  .scroll-stack-inner {
-    padding: 2vh 0 15vh;
-  }
-  .scroll-stack-card.feature-card { 
-    padding: 1.5rem; 
-    height: auto; 
-    margin: 15px 0;
-    border-radius: 20px;
-  }
-  .scroll-stack-card.feature-card .feature-num { 
-    right: 1.5rem; 
-    top: 1.5rem; 
-    font-size: 2.5rem; 
-  }
-  .scroll-stack-card.feature-card .feature-icon {
-    font-size: 2rem;
-  }
-  .scroll-stack-card.feature-card h3 {
-    font-size: 1.25rem;
-  }
-  
-  /* Keep only one page switcher (bottom dock) */
-  .navbar .nav-tabs-glow, .navbar .nav-tabs {
-    display: none !important;
-  }
+  .nav-title { font-size: 0.9rem; }
+  .nav-sub { display: none; }
   .top-icon-nav {
-    gap: 10px;
+    position: static;
+    transform: none;
+    gap: 8px;
   }
   .top-icon-btn {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
   }
   .top-icon-btn svg {
     width: 18px;
     height: 18px;
   }
+  .nav-right { margin-left: auto; }
 
-  /* Make sure content isn't covered by bottom nav */
+  /* ── PAGE BASE ── */
   .page {
-    padding-bottom: 110px !important;
+    padding-top: 56px !important;
+    padding-bottom: 20px !important;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 24px 16px 32px;
+    min-height: auto;
+  }
+  .hero-title {
+    font-size: clamp(1.9rem, 7vw, 2.6rem);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .hero-desc {
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+  }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-cards-track {
+    gap: 8px;
+    padding: 12px 12px;
+  }
+  .lc-img-box {
+    width: 48px;
+    height: 48px;
+  }
+  .lc-name { font-size: 0.62rem; }
+  .lc-script { display: none; }
+  .lang-card { padding: 8px 4px 6px; }
+
+  /* ── SEARCH ROW ── */
+  .search-row {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .search-row .border-glow-card.search-bar-glow {
+    flex: 1 1 100%;
+    max-width: 100%;
+    order: 0;
+  }
+  .search-row .search-bar,
+  .search-row .search-bar-glow .search-bar {
+    height: 54px;
+    border-radius: 16px;
+  }
+  .search-row .search-bar input {
+    font-size: 0.9rem;
+  }
+  .hero-action-btn.mic-hero-btn {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    order: 1;
+  }
+  .hero-action-btn.analyse-hero-btn {
+    height: 54px;
+    flex: 1;
+    order: 2;
+    border-radius: 14px;
+    font-size: 0.78rem;
+  }
+  .analyse-hero-btn .hab-label { font-size: 0.68rem; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 20px 16px;
+    gap: 12px;
+  }
+  .stat-card { padding: 20px 16px; }
+  .stat-value { font-size: 1.6rem; }
+
+  /* ── CHART ── */
+  .chart-section { padding: 0 16px 32px; }
+  .chart-container { padding: 20px 16px; }
+  .chart-header { flex-direction: column; gap: 10px; }
+  .chart-score-badge { align-self: flex-start; }
+
+  /* ── FEATURES / SCROLL STACK ── */
+  .features-section { padding: 0 16px 40px; }
+  /* On mobile: disable the stacking animation; show as a simple list */
+  .scroll-stack-scroller {
+    overflow: visible;
+  }
+  .scroll-stack-inner {
+    padding: 0 0 24px;
+    min-height: auto;
+  }
+  /* Override JS-injected transform & will-change for mobile performance */
+  .scroll-stack-card.feature-card {
+    transform: none !important;
+    will-change: auto !important;
+    filter: none !important;
+    margin-bottom: 16px !important;
+    height: auto;
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+  .scroll-stack-card.feature-card .feature-num {
+    right: 16px;
+    top: 16px;
+    font-size: 2.5rem;
+  }
+  .scroll-stack-card.feature-card .feature-icon { font-size: 1.8rem; }
+  .scroll-stack-card.feature-card h3 { font-size: 1.1rem; }
+  .scroll-stack-card.feature-card p { font-size: 0.82rem; }
+  .scroll-stack-end { display: none; }
+
+  /* ── BENTO GRID (Analysis Report) ── */
+  .bento-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .diagnosis-card { grid-row: span 1; }
+  .doctor-card { grid-column: span 1; }
+  .diagnosis-disease { font-size: 1.5rem; }
+  .bento-card { padding: 18px 16px; }
+  .report-actions-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .report-actions { flex-wrap: wrap; width: 100%; }
+  .action-btn { flex: 1; justify-content: center; min-width: 0; }
+
+  /* ── SUPPORT ── */
+  .support-section {
+    flex-direction: column;
+    padding: 0 16px 48px;
+    gap: 12px;
+  }
+  .support-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 16px;
+  }
+  .support-actions { margin-left: 0; justify-content: center; flex-wrap: wrap; }
+  .disclaimer-card { flex: none; }
+
+  /* ── HISTORY / PROFILE pages ── */
+  .page-container { padding: 16px !important; }
+  .page-header h2 { font-size: 1.3rem; }
+  .profile-grid { gap: 14px; }
+
+  /* ── SYMPTOM MODAL ── */
+  .symptom-modal-card {
+    width: 96vw;
+    max-height: 88vh;
+    padding: 20px 14px;
+    border-radius: 20px;
+  }
+  .symptom-lanes {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Disable bottom dock (hidden globally already) */
+  #magic-dock { display: none !important; }
+
+  /* ── BENTO LOADING PANEL ── */
+  .hload-wrap {
+    padding: 28px 16px;
+    border-radius: 18px;
+  }
+  .hload-scanner { width: 120px; height: 120px; }
+  .hload-ring-svg { width: 120px; height: 120px; }
+  .hload-title { font-size: 1rem; }
+  .hload-subtitle { font-size: 0.78rem; }
+  .hload-steps { gap: 8px; }
+  .hstep-title { font-size: 0.82rem; }
+  .hstep-desc { font-size: 0.7rem; }
+
+  /* ── SECTION TITLE ── */
+  .section-title { font-size: 1.35rem; }
+
+  /* ── HOME REPORT ── */
+  .home-report-container { padding: 0 0 20px; }
+}
+
+/* ══════════════ LARGE PHONE: 480px ══════════════ */
+@media (max-width: 480px) {
+
+  /* ── NAV ── */
+  .navbar { padding: 8px 12px; }
+  .nav-logo { width: 32px; height: 32px; }
+  .nav-title { font-size: 0.8rem; letter-spacing: 0.04em; }
+  .top-icon-btn { width: 32px; height: 32px; }
+  .top-icon-btn svg { width: 15px; height: 15px; }
+
+  /* ── HERO ── */
+  .hero { padding: 16px 12px 24px; }
+  .hero-title {
+    font-size: clamp(1.6rem, 8.5vw, 2rem);
+  }
+  .hero-desc { font-size: 0.82rem; }
+
+  /* ── LANG CARDS ── */
+  .lang-cards-track { gap: 6px; padding: 10px 8px; }
+  .lc-img-box { width: 40px; height: 40px; }
+  .lc-name { font-size: 0.58rem; }
+
+  /* ── SEARCH ROW ── */
+  .search-row .search-bar,
+  .search-row .search-bar-glow .search-bar { height: 48px; }
+  .hero-action-btn.mic-hero-btn { width: 48px; height: 48px; }
+  .hero-action-btn.analyse-hero-btn { height: 48px; }
+
+  /* ── STATS ── */
+  .stats-row { grid-template-columns: 1fr 1fr; padding: 14px 12px; gap: 10px; }
+  .stat-card { padding: 16px 12px; }
+  .stat-value { font-size: 1.4rem; }
+
+  /* ── BENTO GRID ── */
+  .bento-card { padding: 14px 12px; }
+  .diagnosis-disease { font-size: 1.3rem; }
+
+  /* ── CHART ── */
+  .chart-container { padding: 16px 12px; }
+
+  /* ── FEATURES ── */
+  .features-section { padding: 0 12px 32px; }
+  .scroll-stack-card.feature-card { padding: 18px 14px; }
+  .section-title { font-size: 1.2rem; }
+
+  /* ── SYMPTOM MODAL ── */
+  .symptom-modal-card { padding: 16px 12px; }
+  .action-btn { font-size: 0.75rem; padding: 8px 12px; }
+}
+
+/* ══════════════ SMALL PHONE: 360px ══════════════ */
+@media (max-width: 360px) {
+  .hero-title { font-size: 1.5rem; }
+  .lc-img-box { width: 36px; height: 36px; }
+  .lc-name { font-size: 0.55rem; }
+  .search-row .search-bar,
+  .search-row .search-bar-glow .search-bar { height: 44px; }
+  .hero-action-btn.mic-hero-btn { width: 44px; height: 44px; }
+  .hero-action-btn.analyse-hero-btn { height: 44px; font-size: 0.72rem; }
+  .navbar { padding: 6px 10px; }
+  .nav-brand { gap: 8px; }
+  .bento-card { padding: 12px 10px; }
+  .features-section { padding: 0 10px 28px; }
+  .scroll-stack-card.feature-card { padding: 16px 12px; }
+  .section-title { font-size: 1.1rem; }
+  .top-icon-btn { width: 30px; height: 30px; }
+}
+
+/* ── UNIVERSAL TOUCH SCROLL OPTIMIZATION ── */
+@media (hover: none) and (pointer: coarse) {
+  /* Smooth momentum-based native scroll on all touch devices */
+  .page,
+  .history-list,
+  .symptom-modal-card,
+  .bento-grid,
+  .lang-cards-track {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  /* Remove hover effects on touch devices to prevent sticky states */
+  .bento-card:hover,
+  .feature-card:hover,
+  .stat-card:hover,
+  .support-btn:hover {
+    transform: none;
+    box-shadow: var(--shadow);
+  }
+  .lang-card:hover { transform: none; }
+  .lang-card:hover .lc-img-box { transform: none; box-shadow: none; }
+  /* Faster tap response */
+  button, a, [role="button"] {
+    touch-action: manipulation;
   }
 }
