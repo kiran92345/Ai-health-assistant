@@ -137,12 +137,10 @@ body {
 }
 
 .top-icon-nav {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  margin-left: auto;
 }
 .top-icon-btn {
   width: 50px;
@@ -181,15 +179,15 @@ body {
   100% { transform: scale(1); }
 }
 
-.nav-right { display: flex; align-items: center; gap: 14px; margin-left: auto; flex-shrink: 0; }
+.nav-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
 .lang-badge {
   font-size: 0.75rem; font-weight: 600; color: var(--teal);
   background: rgba(0,151,167,0.10); border: 1px solid rgba(0,151,167,0.25);
   padding: 4px 10px; border-radius: 20px;
 }
 .nav-profile-switch {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
 }
 
 /* ═══ PAGES ═══ */
